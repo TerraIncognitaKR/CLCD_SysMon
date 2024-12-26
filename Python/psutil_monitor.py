@@ -104,8 +104,6 @@ while True :
     var_up_rate         = (var_net_updt_stat.bytes_sent - var_net_init_stat.bytes_sent) / 1
     var_dl_rate         = (var_net_updt_stat.bytes_recv - var_net_init_stat.bytes_recv) / 1
 
-    print(f"up : {var_up_rate}byte/s | dl : {var_dl_rate}byte/s")
-
     if (var_up_rate > 1024) :
       str_up_ind = '^'        
     else :
