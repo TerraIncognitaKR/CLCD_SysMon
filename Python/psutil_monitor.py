@@ -19,6 +19,10 @@
   *
   *
   * @note
+  *   Ver.02 (2024/12) :
+  *     - add network up/down indicator
+  *     - minor layout change
+  *
   *   Ver.01 (2024/06) :
   *     - Initial Release
   *
@@ -55,6 +59,13 @@ str_lcd_uptime = None
 str_lcd_temperature = None
 str_lcd_total = None
 
+var_net_init_stat = None
+var_net_updt_stat = None
+var_up_rate = None
+var_dl_rate = None
+str_up_ind  = None
+str_dl_ind  = None
+
 
 # *****************************************************************************
 
@@ -71,9 +82,14 @@ print (" >>> to stop, press [CTRL+C]")
 ### Do main rotines
 while True :
     ### retrive values
+    
+    var_net_init_stat           = psutil.net_io_counters()                          # Ver02  get initial xfer 
+    
     var_cpu_percentage_used     = psutil.cpu_percent(interval=1, percpu=False)      # cycles every 1 seconds.
     var_mem_percentage_used     = psutil.virtual_memory().percent
     var_mem_percentage_avail    = ((psutil.virtual_memory().free)/(psutil.virtual_memory().total))*100.0
+
+    var_net_updt_stat           = psutil.net_io_counters()                          # Ver02  get updated xfer 
 
     var_temperature_all         = psutil.sensors_temperatures()
     var_temperature_cpu_core    = var_temperature_all['coretemp']
@@ -85,12 +101,28 @@ while True :
     var_uptime_mm       = format(int((var_uptime_raw_int%(60*60))/60), '02')
     var_uptime_ss       = format((var_uptime_raw_int%60), '02')
 
+    var_up_rate         = (var_net_updt_stat.bytes_sent - var_net_init_stat.bytes_sent) / 1
+    var_dl_rate         = (var_net_updt_stat.bytes_recv - var_net_init_stat.bytes_recv) / 1
+
+    print(f"up : {var_up_rate}byte/s | dl : {var_dl_rate}byte/s")
+
+    if (var_up_rate > 1024) :
+      str_up_ind = '^'        
+    else :
+      str_up_ind = '-'
+
+    if (var_dl_rate > 1024) :
+      str_dl_ind = 'v'        
+    else :
+      str_dl_ind = '-'
+
     ### create string
     # str_lcd_currtime    =            str(now.strftime('%y-%m-%d %H:%M:%S')) + "\n"
-    str_lcd_uptime      = "UP  " + str(var_uptime_dd) + "D " + str(var_uptime_hh) + ":" + str(var_uptime_mm) + ":" + str(var_uptime_ss) + "\n"
-    str_lcd_cpu_usage   = "CPU(%) :   " + str(var_cpu_percentage_used) + "\n"
-    str_lcd_mem_usage   = "MEM(%) :   " + str(var_mem_percentage_used) + "\n"
-    str_lcd_temperature = "TEMP   :   " + str(var_temperature_cpu_package.current) + " 'C\n"
+    # str_lcd_uptime      = "> " + str(var_uptime_dd) + "D " + str(var_uptime_hh) + ":" + str(var_uptime_mm) + ":" + str(var_uptime_ss) + "\n"  # Ver02
+    str_lcd_uptime      = "> " + str(var_uptime_dd) + "D " + str(var_uptime_hh) + ":" + str(var_uptime_mm) + ":" + str(var_uptime_ss) + " " + str_up_ind + "|" + str_dl_ind + "\n"   # Ver02
+    str_lcd_cpu_usage   = "CPU ( %): " + str(var_cpu_percentage_used) + "  \n"
+    str_lcd_mem_usage   = "MEM ( %): " + str(var_mem_percentage_used) + "  \n"
+    str_lcd_temperature = "TEMP('C): " + str(var_temperature_cpu_package.current) + "\n"
 
     ### merge to single string
     str_lcd_total = str_lcd_uptime + str_lcd_cpu_usage + str_lcd_mem_usage + str_lcd_temperature
