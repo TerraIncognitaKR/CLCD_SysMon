@@ -27,6 +27,18 @@ by default, it works when your device is recognized as /dev/ttyUSB0. if it doesn
 
 updates every 1 seconds.
 
+
+
+(Version 2 of psutil_monitor.py) 
+
+1. System Uptime (DDD HH:MM:SS)   [net up]|[net_dl] --- indicates if each transfer rates > 1024byte/s
+2. CPU Usage (%) 
+3. RAM Usage (%)
+4. Temperature of CPU Package (℃)
+
+
+(Version 1 of psutil_monitor.py)
+
 1. System Uptime (DDD HH:MM:SS)
 2. CPU Usage (%) 
 3. RAM Usage (%)
