@@ -19,6 +19,10 @@
   *
   *
   * @note
+  *   Ver.03 (2025/05) :
+  *     - add display for total incoming/outoging bytes
+  *     - layout change     
+  *
   *   Ver.02 (2024/12) :
   *     - add network up/down indicator
   *     - minor layout change
@@ -59,6 +63,7 @@ str_lcd_uptime = None
 str_lcd_temperature = None
 str_lcd_total = None
 
+### Ver. 02
 var_net_init_stat = None
 var_net_updt_stat = None
 var_up_rate = None
@@ -66,6 +71,12 @@ var_dl_rate = None
 str_up_ind  = None
 str_dl_ind  = None
 
+### Ver.03
+var_net_totalTx_MBytes = None
+var_net_totalRx_MBytes = None
+str_lcd_header1 = None
+str_lcd_value1= None
+str_lcd_totalXferByte = None
 
 # *****************************************************************************
 
@@ -114,16 +125,31 @@ while True :
     else :
       str_dl_ind = '-'
 
+    # Ver03 new
+    var_net_totalTx_MBytes = int( ((var_net_updt_stat.bytes_sent) / 1000000) )
+    var_net_totalRx_MBytes = int( ((var_net_updt_stat.bytes_recv) / 1000000) )
+
     ### create string
     # str_lcd_currtime    =            str(now.strftime('%y-%m-%d %H:%M:%S')) + "\n"
     # str_lcd_uptime      = "> " + str(var_uptime_dd) + "D " + str(var_uptime_hh) + ":" + str(var_uptime_mm) + ":" + str(var_uptime_ss) + "\n"  # Ver02
     str_lcd_uptime      = "> " + str(var_uptime_dd) + "D " + str(var_uptime_hh) + ":" + str(var_uptime_mm) + ":" + str(var_uptime_ss) + " " + str_up_ind + "|" + str_dl_ind + "\n"   # Ver02
+    
+    # ~Ver02
     str_lcd_cpu_usage   = "CPU ( %): " + str(var_cpu_percentage_used) + "  \n"
     str_lcd_mem_usage   = "MEM ( %): " + str(var_mem_percentage_used) + "  \n"
     str_lcd_temperature = "TEMP('C): " + str(var_temperature_cpu_package.current) + "\n"
 
+    # Ver03 new
+    str_lcd_header1     = "CPU%  MEM%  TEMP'c\n"
+    str_lcd_value1      = str(int(var_cpu_percentage_used)).zfill(3) + "   " + str(int(var_mem_percentage_used)).zfill(3) + "   " + str(int(var_temperature_cpu_package.current)).zfill(3) + "\n"
+    str_lcd_totalXferByte = "T " + str(var_net_totalTx_MBytes).zfill(7) + " R " + str(var_net_totalRx_MBytes).zfill(7) + "\n"
+    
     ### merge to single string
-    str_lcd_total = str_lcd_uptime + str_lcd_cpu_usage + str_lcd_mem_usage + str_lcd_temperature
+    # ~Ver02
+    # str_lcd_total = str_lcd_uptime + str_lcd_cpu_usage + str_lcd_mem_usage + str_lcd_temperature
+    
+    # Ver03
+    str_lcd_total = str_lcd_uptime + str_lcd_header1 + str_lcd_value1 + str_lcd_totalXferByte
 
     ### Display!
     ser.write(str.encode(str_lcd_total))
