@@ -28,6 +28,14 @@ by default, it works when your device is recognized as /dev/ttyUSB0. if it doesn
 updates every 1 seconds.
 
 
+(Version 3 of psutil_monitor.py) 
+
+1. (same as Version 2)
+2. CPU%  MEM%  TEMP'C     --- Header
+3. ***   ***   ***        --- Values - integer
+4. T ******  R ******     --- total Tx/Rx bytes (MegaBytes)
+
+
 
 (Version 2 of psutil_monitor.py) 
 
@@ -35,6 +43,7 @@ updates every 1 seconds.
 2. CPU Usage (%) 
 3. RAM Usage (%)
 4. Temperature of CPU Package (℃)
+
 
 
 (Version 1 of psutil_monitor.py)
